@@ -1,6 +1,10 @@
 from tinydb import TinyDB, Query
 import pprint
 
+def clear_data(group_id):
+    db = TinyDB('data/{}.json'.format(group_id))
+    db.purge()
+
 def user_messages(group_id, user_id):
     db = TinyDB('data/{}.json'.format(group_id))
     Message = Query()
@@ -56,43 +60,9 @@ def save_message(m):
     db = TinyDB('data/{}.json'.format(m.group_id))
     db.insert(message_entry(m))
 
-def save_all_messages(group):
-    db = TinyDB('data/{}.json'.format(group.id))
-    db.purge()
-    messages = group.messages()
-
-    print('loading messages')
-
-    while messages.iolder():
-        pass
-
-    print('parsing messages')
+def save_multiple(messages):
+    db = TinyDB('data/{}.json'.format(messages[0].group_id))
     entries = []
     for m in messages:
         entries.append(message_entry(m))
-
-    print('saving messages')
     db.insert_multiple(entries)
-
-    print('done')
-
-def save_recent_messages(group):
-    db = TinyDB('data/{}.json'.format(group.id))
-    messages = group.messages()
-    saved_messages = saved_message_ids(group.id)
-    
-    #Load messages until previously saved appear
-    while messages.iolder():
-        saved = False
-        
-        for m in messages:
-            if m.id in saved_messages:
-                saved = True
-                break
-
-        if saved:
-            break
-   
-    for m in messages:
-        if m.id not in saved_messages:
-            save_message(m)
